@@ -63,3 +63,10 @@ def get_latest_analysis(request):
         
     serializer = CSVHistorySerializer(latest)
     return Response(serializer.data)
+
+@api_view(['GET'])
+def get_recent_analysis(request):
+    # Get last 5 records (most recent first)
+    recent = CSVHistory.objects.order_by('-uploaded_at')[:5]
+    serializer = CSVHistorySerializer(recent, many=True)
+    return Response(serializer.data)

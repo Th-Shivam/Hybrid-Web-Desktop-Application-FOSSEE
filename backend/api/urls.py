@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import ItemViewSet, upload_csv, get_latest_analysis
+from .views import ItemViewSet, upload_csv, get_latest_analysis, get_recent_analysis
 
 router = DefaultRouter()
 router.register(r'items', ItemViewSet)
@@ -9,4 +9,5 @@ urlpatterns = [
     path('', include(router.urls)),
     path('upload-csv/', upload_csv),
     path('latest-analysis/', get_latest_analysis),
+    path('recent-analysis/', get_recent_analysis),
 ]
