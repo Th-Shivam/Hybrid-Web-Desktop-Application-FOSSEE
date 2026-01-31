@@ -11,8 +11,16 @@ class ItemViewSet(viewsets.ModelViewSet):
 
 @api_view(['POST'])
 def upload_csv(request):
+    # Basic error handling
+    if 'file' not in request.FILES:
+        return Response({"error": "No file uploaded"}, status=400)
+
     # Get the file from request
     file = request.FILES['file']
+    
+    # Check if it is a CSV
+    if not file.name.endswith('.csv'):
+        return Response({"error": "File must be a CSV"}, status=400)
     
     # Read CSV using pandas
     df = pd.read_csv(file)
