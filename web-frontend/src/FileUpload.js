@@ -8,6 +8,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 const FileUpload = () => {
     const [file, setFile] = useState(null);
     const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
@@ -19,12 +20,15 @@ const FileUpload = () => {
             return;
         }
 
+        setLoading(true);
         try {
             const response = await uploadCSV(file);
             console.log("Upload Success:", response.data);
             setData(response.data);
         } catch (error) {
             console.log("Upload Error:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -44,7 +48,10 @@ const FileUpload = () => {
         <div>
             <h2>Upload CSV</h2>
             <input type="file" onChange={handleFileChange} accept=".csv" />
-            <button onClick={handleUpload}>Upload</button>
+            <button onClick={handleUpload} disabled={loading || !file}>
+                {loading ? 'Uploading...' : 'Upload'}
+            </button>
+            {loading && <p>Uploading...</p>}
 
             {data && (
                 <div style={{ marginTop: '20px' }}>
