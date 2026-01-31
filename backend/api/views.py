@@ -11,6 +11,15 @@ class ItemViewSet(viewsets.ModelViewSet):
 
 @api_view(['POST'])
 def upload_csv(request):
+    """
+    Upload a CSV file and get analysis.
+    Request: POST (multipart/form-data), key='file'
+    Response: {
+        "total_rows": 10,
+        "average_metrics": {"flowrate": 100.5, ...},
+        "equipment_type_counts": {"Pump": 5, ...}
+    }
+    """
     # Basic error handling
     if 'file' not in request.FILES:
         return Response({"error": "No file uploaded"}, status=400)
@@ -55,6 +64,15 @@ def upload_csv(request):
 
 @api_view(['GET'])
 def get_latest_analysis(request):
+    """
+    Get the latest uploaded analysis.
+    Response: {
+        "id": 1,
+        "file_name": "data.csv",
+        "uploaded_at": "...",
+        "summary_data": {...}
+    }
+    """
     # Get latest record
     latest = CSVHistory.objects.order_by('-uploaded_at').first()
     
@@ -66,6 +84,13 @@ def get_latest_analysis(request):
 
 @api_view(['GET'])
 def get_recent_analysis(request):
+    """
+    Get last 5 uploaded analyses.
+    Response: [
+        {"id": 2, "file_name": "new.csv", ...},
+        {"id": 1, "file_name": "old.csv", ...}
+    ]
+    """
     # Get last 5 records (most recent first)
     recent = CSVHistory.objects.order_by('-uploaded_at')[:5]
     serializer = CSVHistorySerializer(recent, many=True)
