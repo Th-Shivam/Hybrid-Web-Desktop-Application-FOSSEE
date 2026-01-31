@@ -51,7 +51,8 @@ def upload_csv(request):
             "pressure": avg_pressure,
             "temperature": avg_temp
         },
-        "equipment_type_counts": type_counts
+        "equipment_type_counts": type_counts,
+        "data": df.to_dict(orient='records')  # Return raw data for table
     }
     
     # Save to DB (only last 5 will be kept)
