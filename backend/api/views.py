@@ -17,5 +17,23 @@ def upload_csv(request):
     # Read CSV using pandas
     df = pd.read_csv(file)
     
-    # Return count
-    return Response({"rows": len(df)})
+    # Calculate simple stats
+    # Using 'round' to make it look clean
+    avg_flow = round(df['Flowrate'].mean(), 2)
+    avg_pressure = round(df['Pressure'].mean(), 2)
+    avg_temp = round(df['Temperature'].mean(), 2)
+    
+    # Count equipment types
+    # converting to dict for easy json
+    type_counts = df['Type'].value_counts().to_dict()
+    
+    # Return summary
+    return Response({
+        "total_rows": len(df),
+        "average_metrics": {
+            "flowrate": avg_flow,
+            "pressure": avg_pressure,
+            "temperature": avg_temp
+        },
+        "equipment_type_counts": type_counts
+    })

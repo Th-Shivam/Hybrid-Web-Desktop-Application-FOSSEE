@@ -3,10 +3,10 @@ import pandas as pd
 import io
 
 # Create a dummy CSV
-csv_content = """col1,col2
-1,a
-2,b
-3,c
+csv_content = """Equipment Name,Type,Flowrate,Pressure,Temperature
+Pump-A,Pump,100,5.0,80
+Pump-B,Pump,120,6.0,85
+Valve-A,Valve,50,2.0,50
 """
 dummy_file = io.StringIO(csv_content)
 
