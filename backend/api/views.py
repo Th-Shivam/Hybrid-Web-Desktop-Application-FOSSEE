@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-from .models import Item
+from .models import Item, CSVHistory
 from .serializers import ItemSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -28,7 +28,7 @@ def upload_csv(request):
     type_counts = df['Type'].value_counts().to_dict()
     
     # Return summary
-    return Response({
+    summary = {
         "total_rows": len(df),
         "average_metrics": {
             "flowrate": avg_flow,
@@ -36,4 +36,12 @@ def upload_csv(request):
             "temperature": avg_temp
         },
         "equipment_type_counts": type_counts
-    })
+    }
+    
+    # Save to DB (only last 5 will be kept)
+    CSVHistory.objects.create(
+        file_name=file.name,
+        summary_data=summary
+    )
+    
+    return Response(summary)
