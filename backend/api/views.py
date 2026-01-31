@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from .models import Item, CSVHistory
-from .serializers import ItemSerializer
+from .serializers import ItemSerializer, CSVHistorySerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import pandas as pd
@@ -11,20 +11,19 @@ class ItemViewSet(viewsets.ModelViewSet):
 
 @api_view(['POST'])
 def upload_csv(request):
-    # Just assume file is there
+    # Get the file from request
     file = request.FILES['file']
     
     # Read CSV using pandas
     df = pd.read_csv(file)
     
-    # Calculate simple stats
-    # Using 'round' to make it look clean
+    # Calculate statistics
+
     avg_flow = round(df['Flowrate'].mean(), 2)
     avg_pressure = round(df['Pressure'].mean(), 2)
     avg_temp = round(df['Temperature'].mean(), 2)
     
     # Count equipment types
-    # converting to dict for easy json
     type_counts = df['Type'].value_counts().to_dict()
     
     # Return summary
@@ -45,3 +44,14 @@ def upload_csv(request):
     )
     
     return Response(summary)
+
+@api_view(['GET'])
+def get_latest_analysis(request):
+    # Get latest record
+    latest = CSVHistory.objects.order_by('-uploaded_at').first()
+    
+    if not latest:
+        return Response({"error": "No data found"}, status=404)
+        
+    serializer = CSVHistorySerializer(latest)
+    return Response(serializer.data)
