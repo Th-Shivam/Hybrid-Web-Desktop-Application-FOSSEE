@@ -1,6 +1,6 @@
 from django.db import models
 
-# Simple model for the task
+
 class Item(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
@@ -18,7 +18,6 @@ class CSVHistory(models.Model):
         super().save(*args, **kwargs)
         
         # Keep only last 5 records
-        # Naive approach: Count all, if > 5, delete oldest
         objects = CSVHistory.objects.all().order_by('-uploaded_at')
         if objects.count() > 5:
             # Delete everyone after 5th
