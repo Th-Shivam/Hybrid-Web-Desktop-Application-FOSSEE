@@ -4,6 +4,9 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QPu
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
+# Constants
+API_URL = "http://127.0.0.1:8000/api/upload-csv/"
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -14,26 +17,26 @@ class MainWindow(QMainWindow):
         # Main layout container
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
-        layout = QVBoxLayout(central_widget)
+        main_layout = QVBoxLayout(central_widget)
 
         # Upload Button
         self.upload_btn = QPushButton("Upload CSV")
         self.upload_btn.clicked.connect(self.on_upload_click)
-        layout.addWidget(self.upload_btn)
+        main_layout.addWidget(self.upload_btn)
 
         # Status Label
         self.status_label = QLabel("Waiting for upload...")
         self.status_label.setWordWrap(True)
-        layout.addWidget(self.status_label)
+        main_layout.addWidget(self.status_label)
 
         # Chart Canvas
         self.figure = Figure()
         self.canvas = FigureCanvas(self.figure)
-        layout.addWidget(self.canvas)
+        main_layout.addWidget(self.canvas)
 
         # Table Widget
         self.table = QTableWidget()
-        layout.addWidget(self.table)
+        main_layout.addWidget(self.table)
 
     def on_upload_click(self):
         file_path, _ = QFileDialog.getOpenFileName(self, "Open CSV", "", "CSV Files (*.csv)")
@@ -45,10 +48,8 @@ class MainWindow(QMainWindow):
         
         try:
             with open(file_path, 'rb') as f:
-                response = requests.post(
-                    'http://127.0.0.1:8000/api/upload-csv/',
-                    files={'file': f}
-                )
+                # Note: This is a synchronous call, might freeze UI for large files
+                response = requests.post(API_URL, files={'file': f})
             
             if response.status_code == 200:
                 data = response.json()
