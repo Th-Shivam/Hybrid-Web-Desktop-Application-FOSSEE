@@ -2,7 +2,7 @@
 
 A hybrid full-stack application designed to analyze and visualize chemical equipment parameters (Flowrate, Pressure, Temperature) from CSV data. This project demonstrates a decoupled architecture with a centralized Django backend serving both a React web frontend and a PyQt5 desktop application.
 
-## 🌟 Features
+##  Features
 
 - **Centralized API**: Django REST Framework backend handling data processing and storage.
 - **Dual Client Support**:
@@ -12,13 +12,13 @@ A hybrid full-stack application designed to analyze and visualize chemical equip
 - **History Tracking**: Retains the last 5 uploads for quick reference.
 - **Interactive Visualizations**: Bar charts displaying equipment type distribution.
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 - **Backend**: Python 3, Django, Django REST Framework, Pandas, SQLite.
 - **Web Frontend**: React.js, Axios, Chart.js.
 - **Desktop App**: Python 3, PyQt5, Requests, Matplotlib.
 
-## � Project Structure
+##  Project Structure
 
 ```
 ├── backend/                # Django Backend
@@ -34,7 +34,7 @@ A hybrid full-stack application designed to analyze and visualize chemical equip
 └── README.md               # Project Documentation
 ```
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 - Python 3.10+
@@ -80,7 +80,7 @@ pip install PyQt5 requests matplotlib
 python3 desktop-app/main.py
 ```
 
-## 📡 API Endpoints
+##  API Endpoints
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
@@ -88,7 +88,7 @@ python3 desktop-app/main.py
 | `GET` | `/api/latest-analysis/` | Fetch details of the most recent upload. |
 | `GET` | `/api/recent-analysis/` | Fetch list of last 5 uploads (History). |
 
-## 📊 Sample Data Format
+##  Sample Data Format
 The application expects a CSV file with the following columns:
 - `EquipmentID`
 - `EquipmentType` (e.g., Pump, Valve)
