@@ -1,12 +1,13 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QPushButton, QLabel
+import requests
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QPushButton, QLabel, QFileDialog
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
         self.setWindowTitle("Chemical Equipment Parameter Visualizer")
-        self.setGeometry(100, 100, 400, 300)
+        self.setGeometry(100, 100, 500, 400)
 
         # Main layout container
         central_widget = QWidget()
@@ -20,10 +21,40 @@ class MainWindow(QMainWindow):
 
         # Status Label
         self.status_label = QLabel("Waiting for upload...")
+        self.status_label.setWordWrap(True)
         layout.addWidget(self.status_label)
 
     def on_upload_click(self):
-        self.status_label.setText("Upload Button Clicked!")
+        file_path, _ = QFileDialog.getOpenFileName(self, "Open CSV", "", "CSV Files (*.csv)")
+        
+        if not file_path:
+            return
+
+        self.status_label.setText(f"Uploading {file_path}...")
+        
+        try:
+            with open(file_path, 'rb') as f:
+                response = requests.post(
+                    'http://127.0.0.1:8000/api/upload-csv/',
+                    files={'file': f}
+                )
+            
+            if response.status_code == 200:
+                data = response.json()
+                summary_text = (
+                    f"Upload Successful!\n\n"
+                    f"Total Rows: {data['total_rows']}\n"
+                    f"Avg Flowrate: {data['average_metrics']['flowrate']}\n"
+                    f"Avg Pressure: {data['average_metrics']['pressure']}\n"
+                    f"Avg Temperature: {data['average_metrics']['temperature']}\n\n"
+                    f"Equipment Counts: {data['equipment_type_counts']}"
+                )
+                self.status_label.setText(summary_text)
+            else:
+                self.status_label.setText(f"Error: {response.text}")
+                
+        except Exception as e:
+            self.status_label.setText(f"Connection Error: {str(e)}")
 
 def main():
     app = QApplication(sys.argv)
