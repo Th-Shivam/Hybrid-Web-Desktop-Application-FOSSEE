@@ -1,13 +1,15 @@
 import sys
 import requests
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QPushButton, QLabel, QFileDialog, QTableWidget, QTableWidgetItem
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
         self.setWindowTitle("Chemical Equipment Parameter Visualizer")
-        self.setGeometry(100, 100, 600, 600)
+        self.setGeometry(100, 100, 800, 800)
 
         # Main layout container
         central_widget = QWidget()
@@ -23,6 +25,11 @@ class MainWindow(QMainWindow):
         self.status_label = QLabel("Waiting for upload...")
         self.status_label.setWordWrap(True)
         layout.addWidget(self.status_label)
+
+        # Chart Canvas
+        self.figure = Figure()
+        self.canvas = FigureCanvas(self.figure)
+        layout.addWidget(self.canvas)
 
         # Table Widget
         self.table = QTableWidget()
@@ -47,8 +54,9 @@ class MainWindow(QMainWindow):
                 data = response.json()
                 
                 # Format equipment counts
+                counts = data['equipment_type_counts']
                 counts_str = ""
-                for equip, count in data['equipment_type_counts'].items():
+                for equip, count in counts.items():
                     counts_str += f"- {equip}: {count}\n"
 
                 summary_text = (
@@ -62,6 +70,14 @@ class MainWindow(QMainWindow):
                     f"{counts_str}"
                 )
                 self.status_label.setText(summary_text)
+
+                # Update Chart
+                self.figure.clear()
+                ax = self.figure.add_subplot(111)
+                ax.bar(counts.keys(), counts.values())
+                ax.set_title("Equipment Type Distribution")
+                ax.set_ylabel("Count")
+                self.canvas.draw()
 
                 # Populate Table
                 raw_data = data.get('data', [])
