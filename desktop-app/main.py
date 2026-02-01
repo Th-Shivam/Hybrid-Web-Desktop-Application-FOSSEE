@@ -1,13 +1,13 @@
 import sys
 import requests
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QPushButton, QLabel, QFileDialog
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QPushButton, QLabel, QFileDialog, QTableWidget, QTableWidgetItem
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
         self.setWindowTitle("Chemical Equipment Parameter Visualizer")
-        self.setGeometry(100, 100, 500, 400)
+        self.setGeometry(100, 100, 600, 600)
 
         # Main layout container
         central_widget = QWidget()
@@ -23,6 +23,10 @@ class MainWindow(QMainWindow):
         self.status_label = QLabel("Waiting for upload...")
         self.status_label.setWordWrap(True)
         layout.addWidget(self.status_label)
+
+        # Table Widget
+        self.table = QTableWidget()
+        layout.addWidget(self.table)
 
     def on_upload_click(self):
         file_path, _ = QFileDialog.getOpenFileName(self, "Open CSV", "", "CSV Files (*.csv)")
@@ -58,6 +62,18 @@ class MainWindow(QMainWindow):
                     f"{counts_str}"
                 )
                 self.status_label.setText(summary_text)
+
+                # Populate Table
+                raw_data = data.get('data', [])
+                if raw_data:
+                    headers = list(raw_data[0].keys())
+                    self.table.setColumnCount(len(headers))
+                    self.table.setHorizontalHeaderLabels(headers)
+                    self.table.setRowCount(len(raw_data))
+
+                    for row_idx, row_data in enumerate(raw_data):
+                        for col_idx, header in enumerate(headers):
+                            self.table.setItem(row_idx, col_idx, QTableWidgetItem(str(row_data.get(header, ""))))
             else:
                 self.status_label.setText(f"Error: {response.text}")
                 
